@@ -1,8 +1,7 @@
-
-export default function Logo() {
+export default function Logo({ className = "text-3xl" }) {
   return (
-    <h1 className="text-4xl font-bold">
-        Fix <span className="text-accent">Pay</span>
+    <h1 className={`font-bold font-logo ${className}`}>
+        Fix<span className="text-accent">Pay</span>
     </h1>
   );
 }

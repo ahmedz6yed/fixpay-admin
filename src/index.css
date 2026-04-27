@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "@fontsource-variable/quicksand/wght.css";
 @theme {
   /* Colors */
   --color-sage:          #7D8C5A;
@@ -28,6 +28,7 @@
   --font-sans:  "DM Sans", "Helvetica Neue", sans-serif;
   --font-serif: "DM Serif Display", Georgia, serif;
   --font-mono:  "JetBrains Mono", "Fira Code", monospace;
+  --font-logo:  "Quicksand Variable", sans-serif;    
 
   /* Radius */
   --radius-sm:   4px;

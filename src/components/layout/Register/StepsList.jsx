@@ -1,12 +1,6 @@
 import { CheckCircle2, Circle} from "lucide-react";
 
- const steps = [
-  { title: "Your details", description: "Please provide your name and email", completed: true },
-  { title: "Scan QR code", description: "Verify at least one device with 2FA", completed: true },
-  { title: "Choose a password", description: "Must be at least 8 characters", completed: false },
-  { title: "Invite your team", description: "Start collaborating with your team", completed: false },
-  { title: "Add your socials", description: "Share posts to your social accounts", completed: false },
-];
+ import {steps} from "../../../data/StepsList.js";
 
 export default function StepsList() {
   return (

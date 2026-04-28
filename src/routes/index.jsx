@@ -6,6 +6,18 @@ import Step3 from "../features/createAcc/Step3";
 import Step4 from "../features/createAcc/Step4";
 import Step5 from "../features/createAcc/Step5";
 import Step6 from "../features/createAcc/Step6";
+//---------- Extra Page
+import HomePage from "../pages/HomePage";
+//--------- Dashboard Imports
+import Analytics from "../pages/DashboardPages/Analytics";
+import Categories from "../pages/DashboardPages/Categories";
+import ModificationLogs from "../pages/DashboardPages/ModificationLogs";
+import Overview from "../pages/DashboardPages/Overview";
+import Settings from "../pages/DashboardPages/Settings";
+import TasksOffers from "../pages/DashboardPages/TasksOffers";
+import Users from "../pages/DashboardPages/Users";
+
+//---------
 import ProtectedRoute from "../guards/ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
 
@@ -15,6 +27,8 @@ import EmailForgotPassword from "../features/ForgotPassword/EmailForgotPassword"
 import ForgotOTP from "../features/ForgotPassword/ForgotOTP";
 import ForgotPassword from "../pages/ForgotPassword";
 import Login from "../pages/Login";
+import PageNotFound from "../pages/PageNotFound";
+import Profile from "../pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -43,12 +57,38 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/home",
+    element: <HomePage />,
+  },
+  {
     path: "/",
     element: (
       <ProtectedRoute>
         <Dashboard />
       </ProtectedRoute>
     ),
+    children: [
+      { index: true, element: <Overview /> },
+      { path: "users", element: <Users /> },
+      { path: "categories", element: <Categories /> },
+      { path: "tasks-offers", element: <TasksOffers /> },
+      { path: "analytics", element: <Analytics /> },
+      { path: "modification-logs", element: <ModificationLogs /> },
+      { path: "settings", element: <Settings /> },
+    ],
+  },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "*",
+    element: <PageNotFound />,
   },
 ]);
 

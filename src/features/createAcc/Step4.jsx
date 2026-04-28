@@ -1,7 +1,17 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Loader2,
+  MapPin,
+  Navigation,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as z from "zod";
-import { MapPin, Building2, Navigation, ArrowRight, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
+import { useStepStore } from "../../store/useStepStore";
 
 const schema = z.object({
   government: z.string().min(1, "Government is required"),
@@ -9,12 +19,26 @@ const schema = z.object({
   street: z.string().min(1, "Street is required"),
 });
 
-export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError }) {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+export default function Step4({ onSubmit, isLoading, apiError }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(schema),
-    mode: "onTouched"
+    mode: "onTouched",
   });
-
+  const navigate = useNavigate();
+  const nextStep = useStepStore((state) => state.nextStep);
+  const prevStep = useStepStore((state) => state.prevStep);
+  function NextStep() {
+    nextStep();
+    navigate("/register/upload-photo");
+  }
+  function PrevStep() {
+    prevStep();
+    navigate("/register/personal-info");
+  }
   const handleFormSubmit = (data) => {
     if (onSubmit) {
       onSubmit(data);
@@ -25,17 +49,23 @@ export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError })
     <div className="flex flex-col h-full w-full animate-in fade-in duration-500">
       <div className="mb-8 relative pl-5">
         <div className="absolute left-0 top-1.5 w-1.5 h-8 bg-accent rounded-full shadow-sm"></div>
-        <h2 className="text-3xl font-serif text-charcoal mb-2 tracking-tight">Location Details</h2>
+        <h2 className="text-3xl font-serif text-charcoal mb-2 tracking-tight">
+          Location Details
+        </h2>
         <p className="text-muted text-sm leading-relaxed max-w-[280px]">
           Please provide your address information to complete the setup.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col gap-6 flex-1">
-        
+      <form
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="flex flex-col gap-6 flex-1"
+      >
         {/* Government */}
         <div className="flex flex-col gap-2 group">
-          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">Government / State</label>
+          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">
+            Government / State
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <MapPin className="h-4 w-4 text-text-subtle group-focus-within:text-accent transition-colors duration-300" />
@@ -48,13 +78,17 @@ export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError })
             />
           </div>
           {errors.government && (
-            <span className="text-xs text-red-500 font-medium animate-in fade-in">{errors.government.message}</span>
+            <span className="text-xs text-red-500 font-medium animate-in fade-in">
+              {errors.government.message}
+            </span>
           )}
         </div>
 
         {/* City */}
         <div className="flex flex-col gap-2 group">
-          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">City</label>
+          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">
+            City
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <Building2 className="h-4 w-4 text-text-subtle group-focus-within:text-accent transition-colors duration-300" />
@@ -67,13 +101,17 @@ export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError })
             />
           </div>
           {errors.city && (
-            <span className="text-xs text-red-500 font-medium animate-in fade-in">{errors.city.message}</span>
+            <span className="text-xs text-red-500 font-medium animate-in fade-in">
+              {errors.city.message}
+            </span>
           )}
         </div>
 
         {/* Street */}
         <div className="flex flex-col gap-2 group">
-          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">Street Address</label>
+          <label className="text-[11px] font-bold text-charcoal/70 uppercase tracking-widest">
+            Street Address
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <Navigation className="h-4 w-4 text-text-subtle group-focus-within:text-accent transition-colors duration-300" />
@@ -86,7 +124,9 @@ export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError })
             />
           </div>
           {errors.street && (
-            <span className="text-xs text-red-500 font-medium animate-in fade-in">{errors.street.message}</span>
+            <span className="text-xs text-red-500 font-medium animate-in fade-in">
+              {errors.street.message}
+            </span>
           )}
         </div>
 
@@ -100,28 +140,21 @@ export default function RegisterStep3({ onBack, onSubmit, isLoading, apiError })
           )}
 
           <div className="flex gap-4">
-            <button 
-              type="button" 
-              onClick={onBack}
-              disabled={isLoading}
-              className="btn btn-ghost px-6 justify-center py-3.5 rounded-xl hover:bg-surface-raised group border-border/80 text-charcoal/80 hover:text-charcoal transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            <button
+              type="button"
+              onClick={PrevStep}
+              className="btn btn-ghost px-6 justify-center py-3.5 rounded-xl hover:bg-surface-raised group border-border/80 text-charcoal/80 hover:text-charcoal transition-all"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5 text-text-subtle group-hover:-translate-x-1 transition-transform" />
               Back
             </button>
-            <button 
-              type="submit" 
-              disabled={isLoading}
-              className="btn btn-primary flex-1 justify-center py-3.5 rounded-xl group shadow-md hover:shadow-lg shadow-accent/20 hover:bg-accent-hover transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+            <button
+              type="submit"
+              onClick={NextStep}
+              className="btn btn-primary flex-1 justify-center py-3.5 rounded-xl group shadow-md hover:shadow-lg shadow-accent/20 hover:bg-accent-hover transition-all"
             >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="w-4 h-4 ml-1.5 opacity-80 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
+              Next
+              <ArrowRight className="w-4 h-4 ml-1.5 opacity-80 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>

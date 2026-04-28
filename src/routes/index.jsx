@@ -5,15 +5,16 @@ import Step2 from "../features/createAcc/Step2";
 import Step3 from "../features/createAcc/Step3";
 import Step4 from "../features/createAcc/Step4";
 import Step5 from "../features/createAcc/Step5";
+import Step6 from "../features/createAcc/Step6";
 import ProtectedRoute from "../guards/ProtectedRoute";
 import Dashboard from "../pages/Dashboard";
 
 import RegisterLayout from "../components/layout/Register/RegisterLayout";
-import Login from "../pages/Login";
-import ForgotPassword from "../pages/ForgotPassword";
+import ChangePassword from "../features/ForgotPassword/ChangePassword";
 import EmailForgotPassword from "../features/ForgotPassword/EmailForgotPassword";
 import ForgotOTP from "../features/ForgotPassword/ForgotOTP";
-import ChangePassword from "../features/ForgotPassword/ChangePassword";
+import ForgotPassword from "../pages/ForgotPassword";
+import Login from "../pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -23,8 +24,9 @@ const router = createBrowserRouter([
       { index: true, element: <Step1 /> },
       { path: "basic-info", element: <Step2 /> },
       { path: "personal-info", element: <Step3 /> },
-      { path: "upload-photo", element: <Step4 /> },
-      { path: "email-otp", element: <Step5 /> },
+      { path: "location-details", element: <Step4 /> },
+      { path: "upload-photo", element: <Step5 /> },
+      { path: "email-otp", element: <Step6 /> },
     ],
   },
   {

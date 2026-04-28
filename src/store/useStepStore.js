@@ -1,66 +1,40 @@
-// src/store/useFormStore.js
-import { create } from 'zustand'
+import { create } from "zustand";
 
-export const useFormStore = create((set, get) => ({
+const INITIAL_FORM_DATA = {};
 
-  // ── Step Control ──────────────────────────
-  currentStep: 1,
-  totalSteps: 5,
+export const useStepStore = create((set) => ({
+  step: 1,
+  formData: INITIAL_FORM_DATA,
 
+  // Navigation with bounds checking
   nextStep: () =>
     set((state) => ({
-      currentStep: Math.min(state.currentStep + 1, state.totalSteps),
+      step: state.step < 5 ? state.step + 1 : state.step,
     })),
 
   prevStep: () =>
     set((state) => ({
-      currentStep: Math.max(state.currentStep - 1, 1),
+      step: state.step > 1 ? state.step - 1 : state.step,
     })),
 
-  goToStep: (step) => set({ currentStep: step }),
+  setStep: (step) => 
+    set(() => ({ 
+      step: Math.min(Math.max(step, 1), 5) 
+    })),
 
-  // ── Form Data (one slice per step) ────────
-  personalInfo: { firstName: '', lastName: '', email: '' },
-  addressInfo:  { street: '', city: '', country: '' },
-  accountInfo:  { username: '', password: '' },
-  planInfo:     { plan: 'free' },
-  reviewInfo:   { agreed: false },
-
-  // ── Update a specific step's data ─────────
-  updateStep: (stepKey, data) =>
+  // Flattened update: merges all properties into the root formData object
+  updateForm: (data) =>
     set((state) => ({
-      [stepKey]: { ...state[stepKey], ...data },
+      formData: {
+        ...state.formData,
+        ...data,
+      },
     })),
 
-  // ── Validation per step ───────────────────
-  isStepValid: () => {
-    const { currentStep, personalInfo, accountInfo } = get()
-    switch (currentStep) {
-      case 1: return personalInfo.firstName && personalInfo.email
-      case 2: return true  // address optional
-      case 3: return accountInfo.username && accountInfo.password.length >= 6
-      case 4: return true
-      case 5: return true
-      default: return false
-    }
-  },
-
-  // ── Submit ────────────────────────────────
-  submitForm: () => {
-    const { personalInfo, addressInfo, accountInfo, planInfo } = get()
-    const payload = { ...personalInfo, ...addressInfo, ...accountInfo, ...planInfo }
-    console.log('Submitting:', payload)
-    // call your API here
-  },
-
-  // ── Reset ─────────────────────────────────
-  resetForm: () =>
+  // Reset to original clean state
+  reset: () =>
     set({
-      currentStep: 1,
-      personalInfo: { firstName: '', lastName: '', email: '' },
-      addressInfo:  { street: '', city: '', country: '' },
-      accountInfo:  { username: '', password: '' },
-      planInfo:     { plan: 'free' },
-      reviewInfo:   { agreed: false },
+      step: 1,
+      formData: INITIAL_FORM_DATA,
     }),
-}))
+}));

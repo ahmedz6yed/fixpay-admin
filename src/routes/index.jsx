@@ -75,17 +75,9 @@ const router = createBrowserRouter([
       { path: "analytics", element: <Analytics /> },
       { path: "modification-logs", element: <ModificationLogs /> },
       { path: "settings", element: <Settings /> },
+      { path: "profile", element: <Profile /> }
     ],
   },
-  {
-    path: "/profile",
-    element: (
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    ),
-  },
-
   {
     path: "*",
     element: <PageNotFound />,

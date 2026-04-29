@@ -1,10 +1,10 @@
 import { Navigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 export default function ProtectedRoute({ children }) {
-  // Hardcoded false for now to force redirect to /login
-  const isAuthenticated = false;
-
-  if (!isAuthenticated) {
+  const token = useAuthStore((s) => s.token);
+  
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 

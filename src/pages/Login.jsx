@@ -1,8 +1,12 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import Logo from "../components/ui/Logo";
-import { Link, useNavigate } from "react-router-dom";
+import { useEmailLogin } from "../hooks/useAuth";
+import { emailLoginSchema } from "../schemas/authSchemas";
 
-// ─── Reusable: Google Icon ─────────────────────────────────
+// ─── Google Icon ──────────────────────────────────────────
 const GoogleIcon = () => (
   <svg
     width="18"
@@ -30,7 +34,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-// ─── Reusable: EyeOff Icon ────────────────────────────────
+// ─── Eye Icons ────────────────────────────────────────────
 const EyeOffIcon = () => (
   <svg
     width="16"
@@ -64,7 +68,7 @@ const EyeIcon = () => (
   </svg>
 );
 
-// ─── Reusable: Divider ────────────────────────────────────
+// ─── Divider ──────────────────────────────────────────────
 const OrDivider = ({ label = "or Login with Email" }) => (
   <div className="flex items-center gap-3 my-1">
     <hr className="divider flex-1 m-0" />
@@ -75,20 +79,32 @@ const OrDivider = ({ label = "or Login with Email" }) => (
   </div>
 );
 
-// ─── Reusable: FormField ──────────────────────────────────
-const FormField = ({ label, children }) => (
+// ─── FormField ────────────────────────────────────────────
+const FormField = ({ label, error, children }) => (
   <div className="flex flex-col gap-1.5">
     <label className="text-sm font-medium text-[var(--color-text)] font-sans">
       {label}
     </label>
     {children}
+    {error && (
+      <p
+        className="text-xs font-sans m-0 px-3 py-2 rounded-sm border"
+        role="alert"
+        style={{
+          color: "#c0392b",
+          background: "#fdf0ed",
+          borderColor: "#f5c6c0",
+        }}
+      >
+        {error}
+      </p>
+    )}
   </div>
 );
 
-// ─── Reusable: PasswordInput ──────────────────────────────
+// ─── PasswordInput ────────────────────────────────────────
 const PasswordInput = ({
-  value,
-  onChange,
+  registration,
   placeholder = "Enter your password",
 }) => {
   const [show, setShow] = useState(false);
@@ -97,9 +113,9 @@ const PasswordInput = ({
       <input
         className="input pr-10"
         type={show ? "text" : "password"}
-        value={value}
-        onChange={onChange}
         placeholder={placeholder}
+        autoComplete="current-password"
+        {...registration}
       />
       <button
         type="button"
@@ -113,7 +129,7 @@ const PasswordInput = ({
   );
 };
 
-// ─── Reusable: RememberMe Checkbox ───────────────────────
+// ─── RememberMe ───────────────────────────────────────────
 const RememberMe = ({ checked, onChange }) => (
   <label className="flex items-center gap-2 cursor-pointer select-none">
     <div
@@ -141,7 +157,7 @@ const RememberMe = ({ checked, onChange }) => (
   </label>
 );
 
-// ─── Reusable: GoogleButton ───────────────────────────────
+// ─── GoogleButton ─────────────────────────────────────────
 const GoogleButton = ({ onClick }) => (
   <button
     type="button"
@@ -153,53 +169,54 @@ const GoogleButton = ({ onClick }) => (
   </button>
 );
 
-// ─── Reusable: SubmitButton ───────────────────────────────
+// ─── SubmitButton ─────────────────────────────────────────
 const SubmitButton = ({ label = "Login", loading = false }) => (
   <button
     type="submit"
-    className="btn btn-primary w-full justify-center py-3.5 px-5 text-sm font-semibold rounded-md tracking-wide transition-fast hover:-translate-y-px hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed"
     disabled={loading}
+    className="btn btn-primary w-full justify-center py-3.5 px-5 text-sm font-semibold rounded-md tracking-wide transition-fast hover:-translate-y-px hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed"
   >
     {loading ? "Logging in…" : label}
   </button>
 );
 
-// ─── Main: Login ──────────────────────────────────────────
+// ─── Login Page ───────────────────────────────────────────
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
 
-    if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
+  // ── RHF + Zod ──────────────────────────────────────────
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(emailLoginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-    setLoading(true);
+  // ── TanStack Query mutation ─────────────────────────────
+  // onSuccess → saves token + user to Zustand, navigates to /dashboard
+  // onError   → surfaces the backend message below
+  const { mutate, isPending, isError, error } = useEmailLogin();
 
-    // Simulate async login
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    // TODO: replace with real auth call
-    setError("Invalid credentials. (Demo only)");
-  };
+  const serverError = isError
+    ? (error?.response?.data?.message ?? "Login failed. Please try again.")
+    : null;
+
+  const onSubmit = (values) => mutate(values);
 
   const handleGoogle = () => {
-    // TODO: trigger Google OAuth flow
+    // TODO: trigger Google OAuth flow (Option B)
     alert("Google OAuth — connect your provider here.");
   };
 
   return (
     <div className="relative min-h-screen bg-page flex items-center justify-center p-6">
+      {/* Logo */}
       <div className="absolute top-4 left-4 md:top-8 md:left-8 transition-normal">
         <Logo className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl" />
       </div>
+
       <div className="w-full max-w-[360px] flex flex-col gap-6">
         {/* Heading */}
         <div className="flex flex-col gap-1">
@@ -211,29 +228,33 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Google */}
+        {/* Google SSO */}
         <GoogleButton onClick={handleGoogle} />
 
         {/* Divider */}
         <OrDivider />
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <FormField label="Email">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="flex flex-col gap-4"
+        >
+          <FormField label="Email" error={errors.email?.message}>
             <input
               className="input"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="E.g. johndoe@email.com"
               autoComplete="email"
+              aria-invalid={!!errors.email}
+              {...register("email")}
             />
           </FormField>
 
-          <FormField label="Password">
+          <FormField label="Password" error={errors.password?.message}>
             <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              registration={register("password")}
+              placeholder="Enter your password"
             />
           </FormField>
 
@@ -243,32 +264,33 @@ export default function Login() {
               checked={remember}
               onChange={() => setRemember((r) => !r)}
             />
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-sm text-accent font-sans font-medium no-underline transition-fast hover:text-[var(--color-accent-hover)]"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
-          {/* Error */}
-          {error && (
+          {/* Server-side error */}
+          {serverError && (
             <p
               className="text-xs font-sans m-0 px-3 py-2 rounded-sm border"
+              role="alert"
               style={{
                 color: "#c0392b",
                 background: "#fdf0ed",
                 borderColor: "#f5c6c0",
               }}
             >
-              {error}
+              {serverError}
             </p>
           )}
 
-          <SubmitButton label="Login" loading={loading} />
+          <SubmitButton label="Login" loading={isPending} />
         </form>
 
-        {/* Register */}
+        {/* Register link */}
         <p className="text-center text-sm text-muted font-sans m-0">
           Not registered yet?{" "}
           <Link

@@ -3,7 +3,7 @@ import MobileDropdown from "../components/layout/AppLayout/MainStructure/MobileD
 import Sidebar from "../components/layout/AppLayout/MainStructure/Sidebar/SideBar";
 export default function Dashboard() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col ">
       {/* Mobile Dropdown */}
       <div className="md:hidden">
         <MobileDropdown />
